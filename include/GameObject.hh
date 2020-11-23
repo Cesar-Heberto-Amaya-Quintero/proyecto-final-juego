@@ -15,6 +15,10 @@ class GameObject
         float tileBaseHeight;
         sf::RenderWindow* window;
 
+        const char* tagName{"default"};
+
+        bool debug{};
+
         void InitSprite(b2World*&, b2Vec2*, b2BodyType);
 
     public:
@@ -25,6 +29,11 @@ class GameObject
         BoxCollider* GetCollider() const;
         void Update();
         void SetPosition(float,float);
+        const char* GetTagName() const;
+        void SetTagName (const char*);
+
+        void SetDebug(bool);
+        bool GetDebug() const;
 };
 
 

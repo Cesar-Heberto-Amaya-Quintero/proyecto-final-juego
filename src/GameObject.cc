@@ -56,3 +56,23 @@ void GameObject::Update()
     window->draw(*sprite);
 
 }
+
+const char* GameObject::GetTagName() const 
+{
+    return tagName;
+}
+
+void GameObject::SetTagName(const char* tagName)
+{
+    this->tagName = tagName;
+}
+
+bool GameObject::GetDebug() const
+{
+    return debug;
+}
+
+void GameObject::SetDebug(bool debug)
+{
+    this->debug = debug;
+}

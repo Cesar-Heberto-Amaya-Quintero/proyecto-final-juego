@@ -4,7 +4,7 @@ BoxCollider::BoxCollider(float posX, float posY, sf::Color* borderColor, float w
 {
     this->posX = posX;
     this->posY = posY;
-    this->borderColor= borderColor;
+    this->borderColor= borderColor; 
     this->width= width;
     this->height= height;
     this->rigidbody= rigidbody;
