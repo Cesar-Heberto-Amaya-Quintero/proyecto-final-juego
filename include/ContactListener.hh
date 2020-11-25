@@ -25,5 +25,6 @@ class ContactListener : public b2ContactListener
         void EndContact(b2Contact*);
         int GetSceneIndex() const;
         bool IsGameOver() const;
-        void SetGameOver(bool);    
+        float GetDelay() const;
+        void ResetGameOver(bool);    
 };

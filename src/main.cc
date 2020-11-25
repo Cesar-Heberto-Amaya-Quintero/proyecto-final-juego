@@ -15,21 +15,18 @@
 #define WINDOW_WIDTH 1280
 #define WINDOW_HEIGHT 720
 #define GAME_NAME "JUEGUITO"
-#define ESCENARIO_AIRE_LIBRE "assets/sprites/Escenarios.png"
+#define ESCENARIO_AIRE_LIBRE "assets/sprites/Escenarios1.png"
 #define TILES "assets/sprites/tiles2.png"
 #define TILES2 "assets/sprites/tiles3.png"
 #define SPRITE_SHEET_DOG "assets/sprites/dogSpriteFinal.png"
 #define BG_MUSIC1 "assets/audio/musicaFondoAfuera.ogg"  
 #define SPRITE_SCALE 4.f
-#define PLAYER_MOVESPEED 5.0f
-#define FPS 120
+#define PLAYER_MOVESPEED 20.0f
+#define FPS 244
 #define FONT "assets/fonts/NerkoOne-Regular.ttf"
-
-
 
 int main()
 {
-
     //esto es la ventana de tu grafico
     sf::RenderWindow* window = new sf::RenderWindow(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), GAME_NAME);
 
@@ -38,17 +35,15 @@ int main()
     sf::Sound* sound {new sf::Sound()};
     soundBuffer->loadFromFile(BG_MUSIC1);
     sound->setBuffer(*soundBuffer);
-    sound->setVolume(0.f);
+    sound->setVolume(0.5f);
     sound->setLoop(true);
     sound->play();
-
     
     //aqui vas a guardar los eventos dentro de la ventana, eje: teclado, mouse, etc.
     sf::Event event;
 
     //CREAMOS EL SCORE
     Score* score{new Score(FONT, "Puntos: ", 32, new sf::Vector2f(25,5), new sf::Color(255,255,255), window)};
-
 
     //Camara para seguir al jugador
     sf::View* followPlayer {new sf::View()};
@@ -128,26 +123,85 @@ int main()
     /*sf::Sprite* trampaPerro{new sf::Sprite(*spriteSheetDog, * (new sf::IntRect(64*1, 64*11, 64,64)))};
     trampaPerro->setPosition(16*20,16*25); */
 
-    GameObject* trampaPerro{new GameObject(spriteSheetDog, 64*1, 64*11,64,64,
-    1, 1, new b2Vec2(600,400),b2BodyType::b2_staticBody ,world, window)};
-
     Animation* spikeAnimation {new Animation(11, 1,4, floorSpike, 300.f)};
-    Animation* trampaPerroAnimation {new Animation(11, 1,12, trampaPerro->GetSprite(), 50.f)};
-
+    
     
     //GAME OBJECTSS
-    GameObject* treasure{new GameObject(tilesTexture2, 16*19, 16*19,16,16,
-    SPRITE_SCALE, SPRITE_SCALE, new b2Vec2(400,400),b2BodyType::b2_staticBody ,world, window)};
-    treasure->SetTagName("treasure");
+        GameObject* treasure{new GameObject(tilesTexture2, 16*19, 16*19,16,16,
+        SPRITE_SCALE, SPRITE_SCALE, new b2Vec2(400,400),b2BodyType::b2_staticBody ,world, window)};
+        treasure->SetTagName("treasure");
 
-    GameObject* tree{new GameObject(esAireLibre, 128*1.5, 128*1.5,128,128,
-    2, 2, new b2Vec2(100,600),b2BodyType::b2_staticBody ,world, window)};
+    //CARNES PARA EL PERRO
+        GameObject* meat{new GameObject(spriteSheetDog, 64*1, 64*7,64,64,
+        1.5, 1.5, new b2Vec2(1000,1000),b2BodyType::b2_staticBody ,world, window)};
+        meat->SetTagName("meat");
+        
+        GameObject* meat1{new GameObject(spriteSheetDog, 64*1, 64*7,64,64,
+        1.5, 1.5, new b2Vec2(900,500),b2BodyType::b2_staticBody ,world, window)};
+        meat1->SetTagName("meat");
+
+        GameObject* meat2{new GameObject(spriteSheetDog, 64*1, 64*7,64,64,
+        1.5, 1.5, new b2Vec2(1828,766),b2BodyType::b2_staticBody ,world, window)};
+        meat2->SetTagName("meat");
+
+        GameObject* meat3{new GameObject(spriteSheetDog, 64*1, 64*7,64,64,
+        1.5, 1.5, new b2Vec2(2304,384),b2BodyType::b2_staticBody ,world, window)};
+        meat3->SetTagName("meat");
+
+        GameObject* meat4{new GameObject(spriteSheetDog, 64*1, 64*7,64,64,
+        1.5, 1.5, new b2Vec2(2057,1390),b2BodyType::b2_staticBody ,world, window)};
+        meat4->SetTagName("meat");
+    //TRAMPAS PARA EL PERRO
+        GameObject* trampaPerro{new GameObject(spriteSheetDog, 64*1, 64*11,64,64,
+        1, 1, new b2Vec2(1300,600),b2BodyType::b2_staticBody ,world, window)};
+        trampaPerro->SetTagName("enemy");
+
+        GameObject* trampaPerro1{new GameObject(spriteSheetDog, 64*1, 64*11,64,64,
+        1, 1, new b2Vec2(1576,706),b2BodyType::b2_staticBody ,world, window)};
+        trampaPerro1->SetTagName("enemy");
+
+        GameObject* trampaPerro2{new GameObject(spriteSheetDog, 64*1, 64*11,64,64,
+        1, 1, new b2Vec2(1839,873),b2BodyType::b2_staticBody ,world, window)};
+        trampaPerro2->SetTagName("enemy");
+
+        GameObject* trampaPerro3{new GameObject(spriteSheetDog, 64*1, 64*11,64,64,
+        1, 1, new b2Vec2(2350,560),b2BodyType::b2_staticBody ,world, window)};
+        trampaPerro3->SetTagName("enemy");
+
+        GameObject* trampaPerro4{new GameObject(spriteSheetDog, 64*1, 64*11,64,64,
+        1, 1, new b2Vec2(1247,1247),b2BodyType::b2_staticBody ,world, window)};
+        trampaPerro4->SetTagName("enemy");
+
+        GameObject* tree{new GameObject(esAireLibre, 128*1.5, 128*1.5,128,128,
+        2, 2, new b2Vec2(100,600),b2BodyType::b2_staticBody ,world, window)};
+
+        GameObject* tree1{new GameObject(esAireLibre, 128*1.5, 128*1.5,128,128,
+        2, 2, new b2Vec2(3750,1400),b2BodyType::b2_staticBody ,world, window)};
+
+        GameObject* tronco{new GameObject(esAireLibre, 128*1.5, 64*5,128,64,
+        2, 2, new b2Vec2(1000,900),b2BodyType::b2_staticBody ,world, window)};
 
     //CREAR VECTOR CON LOS GAME OBJECT
-    std::vector<GameObject*>* items{new std::vector<GameObject*>()};
-    items->push_back(treasure);
-    items->push_back(trampaPerro);
-    items->push_back(tree);   
+        std::vector<GameObject*>* items{new std::vector<GameObject*>()};
+        items->push_back(treasure);
+        items->push_back(trampaPerro);
+        items->push_back(tree);
+        items->push_back(tree1);
+        items->push_back(tronco);
+    //AGREGAR CARNES AL MAPA
+        items->push_back(meat); 
+        items->push_back(meat1);
+        items->push_back(meat2);
+        items->push_back(meat3);
+        items->push_back(meat4);
+    //AGREGAR TRAMPAS PARA EL PERRO     
+        items->push_back(trampaPerro);
+        items->push_back(trampaPerro1);
+        items->push_back(trampaPerro2);
+        items->push_back(trampaPerro3);
+        items->push_back(trampaPerro4);
+    //ANIMACIONES TRAMPA
+    Animation* trampaPerroAnimation {new Animation(11, 1,10, trampaPerro->GetSprite(), 50.f)}; 
 
     //DEFINIR EL CONTACTLISTENER PARA LAS COLLISIONES
     ContactListener* contactListener{new ContactListener(score, items)};
@@ -219,20 +273,18 @@ int main()
             character->Move(new b2Vec2(keyboardAxis->x * deltaTime * PLAYER_MOVESPEED, keyboardAxis->y * deltaTime * PLAYER_MOVESPEED));
             character->FlipSpriteX(keyboardAxis->x);
             //APLICAMOS ANIMACIONES AL PERSONAJE CON TECLADO
-            if (std::abs(keyboardAxis->x) > 0 )
+            if (std::abs(keyboardAxis->x) > 0 && std::abs(keyboardAxis->y) == 0)
             {
-                //ANIMACION DE CORRER
                 character->GetAnimation(1)->Play(deltaTime);
             }
-            else
+            else if(keyboardAxis->x == 0 && keyboardAxis->y == 0)
             {
-                //ANIMACION IDLE
                 character->GetAnimation(0)->Play(deltaTime);
             }
             if (keyboardAxis->y > 0)
             {
                 character->GetAnimation(3)->Play(deltaTime);
-
+                
             } else if (keyboardAxis->y < 0)
             {
                 character->GetAnimation(2)->Play(deltaTime);
@@ -281,12 +333,12 @@ int main()
         character->Update();
         score->update(followPlayer->getCenter().x -630, followPlayer->getCenter().y -360);
 
-        /*if(contactListener->IsGameOver())
+        //SI PIERDE
+        if(contactListener->IsGameOver())
         {
-            std::cout << "funciona alv" << std::endl;
-            spikeAnimation->Play(deltaTime);
-            contactListener->SetGameOver(false);
-        }*/
+            std::cout << "Perdiste" << std::endl;
+        }
+        contactListener->ResetGameOver(false);
 
         if (score->GetPoints()>50)
         {

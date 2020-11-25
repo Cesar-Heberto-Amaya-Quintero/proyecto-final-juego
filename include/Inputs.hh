@@ -9,8 +9,6 @@ struct Inputs
     float x;
     float y;
 
-    bool isJumping {false};
-
     Vec2* keyboardAxis;
     Vec2* joystickAxis;
 
@@ -19,7 +17,6 @@ struct Inputs
     Vec2* GetKeyboardAxis(); 
     Vec2* GetJoystickAxis(); 
 
-    bool GetIsJumping();
 
 
 };

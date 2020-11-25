@@ -46,17 +46,4 @@ Vec2* Inputs::GetJoystickAxis()
     return new Vec2(x, y);
 }
 
-bool Inputs::GetIsJumping()
-{
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space))
-    {
-        isJumping = true;
-    }
-    else
-    {
-        isJumping = false;
-    }
-    
-    return isJumping;
-}
 

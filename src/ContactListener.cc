@@ -31,21 +31,22 @@ void ContactListener::BeginContact(b2Contact* contact)
         {   //SI son iguales por eso el 0
             
             score->AddPoints(10);
-            if(score->GetPoints() == 50)
-            {
-                std::cout << "no me toques" << std::endl;
-                gameOver= true;
-            }
-            sceneIndex++;
             //items->erase(std::remove(items->begin(), items->end(), bodyDataB), items->end());
             //bodyDataB->~GameObject();
             
         }
-        if(std::strcmp(bodyDataA->GetTagName(), "player") == 0 && std::strcmp(bodyDataB->GetTagName(), "stairs") == 0)
+        if(std::strcmp(bodyDataA->GetTagName(), "player") == 0 && std::strcmp(bodyDataB->GetTagName(), "meat") == 0)
         {
-            std::cout << "stairs" << std::endl;
+            score->AddPoints(10);
+            //std::cout << "stairs" << std::endl;
+            items->erase(std::remove(items->begin(), items->end(), bodyDataB), items->end());
             bodyDataB->~GameObject();
-            sceneIndex++;
+        }
+        if(std::strcmp(bodyDataA->GetTagName(), "player") == 0 && std::strcmp(bodyDataB->GetTagName(), "enemy") == 0)
+        {
+            gameOver=true;
+            items->erase(std::remove(items->begin(), items->end(), bodyDataB), items->end());
+            bodyDataB->~GameObject();
         }
 
     }
@@ -61,7 +62,7 @@ bool ContactListener::IsGameOver() const
     return gameOver;
 }
 
-void ContactListener::SetGameOver(bool setGameOver)
+void ContactListener::ResetGameOver(bool resetGameOver)
 {
-    gameOver= setGameOver;
+    gameOver= resetGameOver;
 }

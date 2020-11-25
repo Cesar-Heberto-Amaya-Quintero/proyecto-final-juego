@@ -248,7 +248,7 @@ void Maze::Generate()
                 container->push_back(new Tile(cropSize * 2, cropSize * 8, scale, cropSize, texture, world));
                 container->back()->TurnPhysicsOn(cropSize * scale * j, cropSize * scale * i);
                 break;
-            case '!': 
+            case '!':
                 container->push_back(new Tile(cropSize * 3, cropSize * 8, scale, cropSize, texture, world));
                 container->back()->TurnPhysicsOn(cropSize * scale * j, cropSize * scale * i);
                 break;
@@ -260,6 +260,10 @@ void Maze::Generate()
                 container->push_back(new Tile(cropSize * 5, cropSize * 8, scale, cropSize, texture, world));
                 container->back()->TurnPhysicsOn(cropSize * scale * j, cropSize * scale * i);
                 break;
+            case '[': 
+                container->push_back(new Tile(cropSize * 5, cropSize * 9, scale, cropSize, texture, world));
+                container->back()->TurnPhysicsOn(cropSize * scale * j, cropSize * scale * i);
+                break;    
             case ')': 
                 container->push_back(new Tile(cropSize * 2, cropSize * 10, scale, cropSize, texture, world));
                 container->back()->TurnPhysicsOn(cropSize * scale * j, cropSize * scale * i);
@@ -334,6 +338,13 @@ void Maze::Generate()
                 container->push_back(new Tile(cropSize * 5, cropSize * 13, scale, cropSize, texture, world));
                 container->back()->TurnPhysicsOn(cropSize * scale * j, cropSize * scale * i);
                 break;
+                //TRANSICIONES DE ESCENARIOS
+            case 'Z': // Alt 16
+                container->push_back(new Tile(cropSize * 9, cropSize * 9, scale, cropSize, texture));
+                break;
+            case '?':
+                container->push_back(new Tile(cropSize * 9, cropSize * 10, scale, cropSize, texture));
+                break;          
 
             default:
                 break;
