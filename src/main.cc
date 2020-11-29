@@ -11,11 +11,13 @@
 #include "Tile.hh"
 #include "ContactListener.hh"
 #include "Score.hh"
+#include "GUI/Button.hh"
 
 #define WINDOW_WIDTH 1280
 #define WINDOW_HEIGHT 720
 #define GAME_NAME "JUEGUITO"
 #define ESCENARIO_AIRE_LIBRE "assets/sprites/Escenarios1.png"
+#define OBJETOS_CAMPO "assets/sprites/OBJETOS_CAMPO.png"
 #define TILES "assets/sprites/tiles2.png"
 #define TILES2 "assets/sprites/tiles3.png"
 #define SPRITE_SHEET_DOG "assets/sprites/dogSpriteFinal.png"
@@ -27,20 +29,30 @@
 
 int main()
 {
+    int changeWindow {0};
     //esto es la ventana de tu grafico
+    sf::RenderWindow* mainMenuWindow = new sf::RenderWindow(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), GAME_NAME);
     sf::RenderWindow* window = new sf::RenderWindow(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), GAME_NAME);
+    sf::RenderWindow* gameOverWindow = new sf::RenderWindow(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), GAME_NAME);
+
+    gameOverWindow->setVisible(false);
+    window->setVisible(false);
+    window->setActive(false);
 
     //DECLARAMOS EL SONIDO DEL JUEGO
     sf::SoundBuffer* soundBuffer{new sf::SoundBuffer()};
     sf::Sound* sound {new sf::Sound()};
     soundBuffer->loadFromFile(BG_MUSIC1);
     sound->setBuffer(*soundBuffer);
-    sound->setVolume(0.5f);
-    sound->setLoop(true);
-    sound->play();
     
+    
+    Button* buttonCloseGame{new Button(640.f,360.f,150.f,50.f,0.5f, new sf::Color(255,0,0), new sf::Color(255,255,255), gameOverWindow)};
+    Button* buttonStartGame{new Button(640.f,360.f,150.f,50.f,0.5f, new sf::Color(255,0,0), new sf::Color(255,255,255), mainMenuWindow)};
+
     //aqui vas a guardar los eventos dentro de la ventana, eje: teclado, mouse, etc.
     sf::Event event;
+    sf::Event gameOverEvent;
+    sf::Event mainMenuEvent;
 
     //CREAMOS EL SCORE
     Score* score{new Score(FONT, "Puntos: ", 32, new sf::Vector2f(25,5), new sf::Color(255,255,255), window)};
@@ -58,14 +70,20 @@ int main()
     miniMap->setViewport(sf::FloatRect(0.75f,0.f,0.25f,0.25f));
     
     //IMPLEMENTAR FONDO
-    sf::Texture* fondoE1 {new sf::Texture()};
-    fondoE1->loadFromFile("assets/sprites/FondoE1.png");
+    sf::Texture* gameOver {new sf::Texture()};
+    gameOver->loadFromFile("assets/sprites/GameOver.png");
+
+    sf::Texture* mainMenu {new sf::Texture()};
+    mainMenu->loadFromFile("assets/sprites/Menu.png");
 
     //SPRITES-MINA
     sf::Texture* minaSprite {new sf::Texture()};
     minaSprite->loadFromFile("assets/sprites/SPRITES-MINA.png");
 
-    sf::Sprite* fondo {new sf::Sprite(*fondoE1)};
+    sf::Sprite* fondoGameOver {new sf::Sprite(*gameOver)};
+
+    sf::Sprite* fondoMainMenu {new sf::Sprite(*mainMenu)};
+    
     sf::Sprite* mina {new sf::Sprite(*minaSprite)};
     
 
@@ -96,6 +114,9 @@ int main()
     //DECLARACION DE LOS TEXTURE DE LOS ESCENARIOS 
     sf::Texture* esAireLibre {new sf::Texture()};
     esAireLibre->loadFromFile(ESCENARIO_AIRE_LIBRE);
+
+    sf::Texture* objetosCampo {new sf::Texture()};
+    objetosCampo->loadFromFile(OBJETOS_CAMPO);
 
     //PERSONAJE PRINCIPAL
     //Character* character{new Character(tilesTexture, 16*1, 16*5, 16, 16, SPRITE_SCALE, SPRITE_SCALE,
@@ -130,6 +151,9 @@ int main()
         GameObject* treasure{new GameObject(tilesTexture2, 16*19, 16*19,16,16,
         SPRITE_SCALE, SPRITE_SCALE, new b2Vec2(400,400),b2BodyType::b2_staticBody ,world, window)};
         treasure->SetTagName("treasure");
+
+        GameObject* treee{new GameObject(objetosCampo, 64*3, 64*2,64*1,64*1,
+        1, 1, new b2Vec2(2000,1000),b2BodyType::b2_staticBody ,world, window)};
 
     //CARNES PARA EL PERRO
         GameObject* meat{new GameObject(spriteSheetDog, 64*1, 64*7,64,64,
@@ -187,6 +211,7 @@ int main()
         items->push_back(trampaPerro);
         items->push_back(tree);
         items->push_back(tree1);
+        items->push_back(treee);
         items->push_back(tronco);
     //AGREGAR CARNES AL MAPA
         items->push_back(meat); 
@@ -213,171 +238,255 @@ int main()
     Maze* maze1{new Maze(N,M,1,64,minaSprite,"assets/mazes/maze1.txt", world)};
     Maze* mapAireLibre{new Maze(N*2, M*6, 1.5, 64, esAireLibre, "assets/mazes/mapAireLibre.txt", world)};
     Maze*& currentMaze{*&mapAireLibre};
+
+    // WINDOW MAIN MENU
+    while (mainMenuWindow->isOpen())
+            {
+                while (mainMenuWindow->pollEvent(mainMenuEvent))
+                {
+                    if (mainMenuEvent.type == sf::Event::Closed)
+                    {
+                        mainMenuWindow->close();
+                        return 0;
+                    }
+                }
+                mainMenuWindow->clear(*(new sf::Color(0, 255, 0, 255)));//limpiar la pantalla  
+
+                
+                
+                mainMenuWindow->draw(*fondoMainMenu);
+                buttonStartGame->UpdateStart();
+
+                if (buttonStartGame->findWindow() == 2)
+                {
+                    mainMenuWindow->setVisible(false);
+                    mainMenuWindow->setActive(false);
+                    window->setVisible(true);
+                    window->setActive(true);
+
+                    sound->setVolume(0.5f);
+                    sound->setLoop(true);
+                    sound->play();
+
+
+
+
+
+
+
+
+                    //WINDOW JUEGO PRINCIPAL
+                    //esto es el loop principal, mientras la ventana este abierta, esto se va ejecutar.
+                    while (window->isOpen())
+                    {
+
+                        //mientras se esten ejecutando eventos dentro de la ventana, esto se va repetir eje: teclado, joystick, mouse, etc
+                        while (window->pollEvent(event))
+                        {
+                            //si el evento fue la acción de cerrar la ventana, entonces termina la aplicación.
+                            if(event.type == sf::Event::Closed)
+                            {
+                                window->close();
+                            }
+                        }
+
+                        switch (contactListener->GetSceneIndex())
+                        {
+                            case 0:
+                                currentMaze = mapAireLibre;
+                                break;
+                            case 1:
+                                currentMaze = maze1;
+                                break;
+                            default:
+                                currentMaze = mapAireLibre;
+                                break;
+                        }
+
+                        Vec2* keyboardAxis {inputs->GetKeyboardAxis()};
+                        Vec2* joystickAxis {inputs->GetJoystickAxis()};
+
+
+
+                        if(sf::Joystick::isConnected(0))
+                        {
+                            character->Move(new b2Vec2(joystickAxis->x * deltaTime * PLAYER_MOVESPEED, joystickAxis->y * deltaTime * PLAYER_MOVESPEED));
+                            character->FlipSpriteX(joystickAxis->x);
+                            //APLICAMOS ANIMACIONES AL PERSONAJE
+                            if (std::abs(joystickAxis->x) > 0 && std::abs(joystickAxis->y) == 0)
+                            {
+                                character->GetAnimation(1)->Play(deltaTime);
+                            }
+                            else if(joystickAxis->x == 0 && joystickAxis->y == 0)
+                            {
+                                character->GetAnimation(0)->Play(deltaTime);
+                            }
+                            if (joystickAxis->y > 0)
+                            {
+                                character->GetAnimation(3)->Play(deltaTime);
+                                
+                            } else if (joystickAxis->y < 0)
+                            {
+                                character->GetAnimation(2)->Play(deltaTime);
+                            }
+                        }
+                        else
+                        {
+                            character->Move(new b2Vec2(keyboardAxis->x * deltaTime * PLAYER_MOVESPEED, keyboardAxis->y * deltaTime * PLAYER_MOVESPEED));
+                            character->FlipSpriteX(keyboardAxis->x);
+                            //APLICAMOS ANIMACIONES AL PERSONAJE CON TECLADO
+                            if (std::abs(keyboardAxis->x) > 0 && std::abs(keyboardAxis->y) == 0)
+                            {
+                                character->GetAnimation(1)->Play(deltaTime);
+                            }
+                            else if(keyboardAxis->x == 0 && keyboardAxis->y == 0)
+                            {
+                                character->GetAnimation(0)->Play(deltaTime);
+                            }
+                            if (keyboardAxis->y > 0)
+                            {
+                                character->GetAnimation(3)->Play(deltaTime);
+                                
+                            } else if (keyboardAxis->y < 0)
+                            {
+                                character->GetAnimation(2)->Play(deltaTime);
+                            }
+
+
+                        }
+
+                        followPlayer->setCenter(character->GetCharacterPosition().x,character->GetCharacterPosition().y);
+
+                        //miniMap->setCenter(character->GetCharacterPosition().x, 360.f);
+                        miniMap->setCenter(followPlayer->getCenter().x, followPlayer->getCenter().y);
+
+
+                        //SE LE RESTA LA MITAD DE LAS DIMENSIONES PARA QUE EL PERSONAJE QUEDE CENTRADO CON LA IMAGEN EN TODO MOMENTO
+                        //fondo->setPosition(character->GetCharacterPosition().x - 640.f, character->GetCharacterPosition().y - 360.f);
+                        
+
+                        
+                        //std::cout << character->GetCharacterPosition().x << std::endl;
+                        //std::cout << character->GetCharacterPosition().y << std::endl;
+
+
+                        window->clear(*(new sf::Color(0, 100, 0, 255)));//limpiar la pantalla     
+
+                        //CAMARA DEL JUEGO PRINCIPAL
+                        window->setView(*followPlayer);
+
+                        //window->draw(*fondo); 
+
+                        for (auto& tile: *mapAireLibre->GetContainer())
+                        {
+                            window->draw(*tile->GetSprite());
+                        }
+                        int x=0;
+                        for(auto& item : *items)
+                        {
+                            item->Update();
+                        }
+
+
+                        trampaPerroAnimation->Play(deltaTime);
+                        
+                        window->draw(*floorSpike);
+                        //window->draw(*trampaPerro);
+                        character->Update();
+                        
+                        score->update(followPlayer->getCenter().x -630, followPlayer->getCenter().y -360);
+
+                        //SI PIERDE
+                        if(contactListener->IsGameOver())
+                        {
+                            std::cout << "Perdiste" << std::endl;
+                        }
+                        contactListener->ResetGameOver(false);
+
+                        if (score->GetPoints()>20)
+                        {
+                            std::cout << "Perdiste" << std::endl;
+                            window->setVisible(false);
+                            window->setActive(false);
+                            gameOverWindow->setVisible(true);
+                            sound->stop();
+
+
+
+
+
+                            //WINDOW DEL GAME OVER
+                            while (gameOverWindow->isOpen())
+                            {
+                                while (gameOverWindow->pollEvent(gameOverEvent))
+                                {
+                                    if (gameOverEvent.type == sf::Event::Closed)
+                                    {
+                                        gameOverWindow->close();
+                                        return 0;
+                                    }
+                                }
+                                gameOverWindow->clear(*(new sf::Color(0, 255, 0, 255)));//limpiar la pantalla  
+
+                                
+                                buttonCloseGame->Update();
+                                gameOverWindow->draw(*fondoGameOver);
+                                
+
+                                if (buttonCloseGame->findWindow() == 3)
+                                {
+                                    return 0;
+                                }
+                                gameOverWindow->display();
+                            }
+
+
+                            
+                        } 
+
+                        
+
+                        //VISTA DEL MINIMAPA
+                        
+                        window->setView(*miniMap);
+
+                        //window->draw(*fondo); 
+
+                        for (auto& tile: *mapAireLibre->GetContainer())
+                        {
+                            window->draw(*tile->GetSprite());
+                        }
+
+                        for(auto& item : *items)
+                        {
+                            item->Update();
+                        }
+
+                        character->Update();
+
+                        window->display(); //mostrar en pantalla lo que se va dibujar
+
+                        //CONFIGURAR DELTA TIME
+                        sf::Time timeElapsed = clock->getElapsedTime();
+                        deltaTime = timeElapsed.asMilliseconds();
+                        world->ClearForces();
+                        world->Step(1.f/100*deltaTime, 8, 8);
+                        clock->restart();
+
+                        delete keyboardAxis;
+                        delete joystickAxis;
+                    }
+                    return 0;
+                }
+
+
+
+
+
+                
+                mainMenuWindow->display();
+            }
+        
     
-    //esto es el loop principal, mientras la ventana este abierta, esto se va ejecutar.
-    while (window->isOpen())
-    {
-
-        //mientras se esten ejecutando eventos dentro de la ventana, esto se va repetir eje: teclado, joystick, mouse, etc
-        while (window->pollEvent(event))
-        {
-            //si el evento fue la acción de cerrar la ventana, entonces termina la aplicación.
-            if(event.type == sf::Event::Closed)
-            {
-                window->close();
-            }
-        }
-
-        switch (contactListener->GetSceneIndex())
-        {
-            case 0:
-                currentMaze = mapAireLibre;
-                break;
-            case 1:
-                currentMaze = maze1;
-                break;
-            default:
-                currentMaze = mapAireLibre;
-                break;
-        }
-
-        Vec2* keyboardAxis {inputs->GetKeyboardAxis()};
-        Vec2* joystickAxis {inputs->GetJoystickAxis()};
-
-
-
-        if(sf::Joystick::isConnected(0))
-        {
-            character->Move(new b2Vec2(joystickAxis->x * deltaTime * PLAYER_MOVESPEED, joystickAxis->y * deltaTime * PLAYER_MOVESPEED));
-            character->FlipSpriteX(joystickAxis->x);
-            //APLICAMOS ANIMACIONES AL PERSONAJE
-            if (std::abs(joystickAxis->x) > 0 && std::abs(joystickAxis->y) == 0)
-            {
-                character->GetAnimation(1)->Play(deltaTime);
-            }
-            else if(joystickAxis->x == 0 && joystickAxis->y == 0)
-            {
-                character->GetAnimation(0)->Play(deltaTime);
-            }
-            if (joystickAxis->y > 0)
-            {
-                character->GetAnimation(3)->Play(deltaTime);
-                
-            } else if (joystickAxis->y < 0)
-            {
-                character->GetAnimation(2)->Play(deltaTime);
-            }
-        }
-        else
-        {
-            character->Move(new b2Vec2(keyboardAxis->x * deltaTime * PLAYER_MOVESPEED, keyboardAxis->y * deltaTime * PLAYER_MOVESPEED));
-            character->FlipSpriteX(keyboardAxis->x);
-            //APLICAMOS ANIMACIONES AL PERSONAJE CON TECLADO
-            if (std::abs(keyboardAxis->x) > 0 && std::abs(keyboardAxis->y) == 0)
-            {
-                character->GetAnimation(1)->Play(deltaTime);
-            }
-            else if(keyboardAxis->x == 0 && keyboardAxis->y == 0)
-            {
-                character->GetAnimation(0)->Play(deltaTime);
-            }
-            if (keyboardAxis->y > 0)
-            {
-                character->GetAnimation(3)->Play(deltaTime);
-                
-            } else if (keyboardAxis->y < 0)
-            {
-                character->GetAnimation(2)->Play(deltaTime);
-            }
-
-
-        }
-
-          followPlayer->setCenter(character->GetCharacterPosition().x,character->GetCharacterPosition().y);
-
-          //miniMap->setCenter(character->GetCharacterPosition().x, 360.f);
-          miniMap->setCenter(followPlayer->getCenter().x, followPlayer->getCenter().y);
-
-
-        //SE LE RESTA LA MITAD DE LAS DIMENSIONES PARA QUE EL PERSONAJE QUEDE CENTRADO CON LA IMAGEN EN TODO MOMENTO
-         fondo->setPosition(character->GetCharacterPosition().x - 640.f, character->GetCharacterPosition().y - 360.f);
-         
-
-        
-        std::cout << character->GetCharacterPosition().x << std::endl;
-        std::cout << character->GetCharacterPosition().y << std::endl;
-
-
-        window->clear(*(new sf::Color(0, 100, 0, 255)));//limpiar la pantalla     
-
-        //CAMARA DEL JUEGO PRINCIPAL
-        window->setView(*followPlayer);
-
-        window->draw(*fondo); 
-
-        for (auto& tile: *mapAireLibre->GetContainer())
-        {
-            window->draw(*tile->GetSprite());
-        }
-        int x=0;
-        for(auto& item : *items)
-        {
-            item->Update();
-        }
-
-
-        trampaPerroAnimation->Play(deltaTime);
-        
-        window->draw(*floorSpike);
-        //window->draw(*trampaPerro);
-        character->Update();
-        score->update(followPlayer->getCenter().x -630, followPlayer->getCenter().y -360);
-
-        //SI PIERDE
-        if(contactListener->IsGameOver())
-        {
-            std::cout << "Perdiste" << std::endl;
-        }
-        contactListener->ResetGameOver(false);
-
-        if (score->GetPoints()>50)
-        {
-            character->SetPosition(1000, 1000);
-            spikeAnimation->Play(deltaTime);
-        } 
-
-        
-        
-
-        //VISTA DEL MINIMAPA
-        
-        window->setView(*miniMap);
-
-        window->draw(*fondo); 
-
-        for (auto& tile: *mapAireLibre->GetContainer())
-        {
-            window->draw(*tile->GetSprite());
-        }
-
-        for(auto& item : *items)
-        {
-            item->Update();
-        }
-
-        character->Update();
-
-        window->display(); //mostrar en pantalla lo que se va dibujar
-
-        //CONFIGURAR DELTA TIME
-        sf::Time timeElapsed = clock->getElapsedTime();
-        deltaTime = timeElapsed.asMilliseconds();
-        world->ClearForces();
-        world->Step(1.f/100*deltaTime, 8, 8);
-        clock->restart();
-
-        delete keyboardAxis;
-        delete joystickAxis;
-    }
-    return 0;
+    
 }

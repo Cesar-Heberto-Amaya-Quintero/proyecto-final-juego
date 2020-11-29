@@ -349,6 +349,7 @@ void Maze::Generate()
             default:
                 break;
             }
+            
             container->back()->Move(cropSize * scale * j, cropSize * scale * i);
             //container->back()->TurnPhysicsOn(cropSize * scale* j, cropSize * scale * i);
         }

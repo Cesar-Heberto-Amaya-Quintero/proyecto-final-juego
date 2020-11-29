@@ -12,8 +12,6 @@ GameObject::GameObject(sf::Texture*& texture, float cropPosX, float cropPosY, fl
     this->scaleY = scaleY;
     this->window = window;
 
-    tileBaseWidth = cropPosX * scaleX;
-    tileBaseHeight = cropPosY * scaleY;
 
     InitSprite(world, position, bodyType);
 
