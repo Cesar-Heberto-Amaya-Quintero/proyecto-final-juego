@@ -586,8 +586,8 @@ int main()
                         
 
                         
-                        std::cout << character->GetCharacterPosition().x << std::endl;
-                        std::cout << character->GetCharacterPosition().y << std::endl;
+                        //std::cout << character->GetCharacterPosition().x << std::endl;
+                        //std::cout << character->GetCharacterPosition().y << std::endl;
 
 
                         window->clear(*(new sf::Color(0, 100, 0, 255)));//limpiar la pantalla     
