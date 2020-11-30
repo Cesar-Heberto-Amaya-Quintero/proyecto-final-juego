@@ -6,9 +6,10 @@ SFX::SFX()
     soundBuffer = new sf::SoundBuffer();
     sound = new sf::Sound();
 
-    soundList = new const char*[1]
+    soundList = new const char*[2]
     {
-        "assets/audio/musicaFondoAfuera.ogg"        
+        "assets/audio/meat.ogg" ,
+        "assets/audio/perroLlorando.ogg"       
     };
 }
 

@@ -16,12 +16,16 @@
 #define WINDOW_WIDTH 1280
 #define WINDOW_HEIGHT 720
 #define GAME_NAME "JUEGUITO"
+#define OBJETOS_AIRE_LIBRE "assets/sprites/Escenarios.png"
 #define ESCENARIO_AIRE_LIBRE "assets/sprites/Escenarios1.png"
 #define OBJETOS_CAMPO "assets/sprites/OBJETOS_CAMPO.png"
 #define TILES "assets/sprites/tiles2.png"
 #define TILES2 "assets/sprites/tiles3.png"
 #define SPRITE_SHEET_DOG "assets/sprites/dogSpriteFinal.png"
 #define BG_MUSIC1 "assets/audio/musicaFondoAfuera.ogg"  
+#define BG_MENU "assets/audio/menu.ogg" 
+#define BG_LOSE "assets/audio/lose.ogg" 
+#define BG_WIN "assets/audio/win.ogg" 
 #define SPRITE_SCALE 4.f
 #define PLAYER_MOVESPEED 20.0f
 #define FPS 244
@@ -29,33 +33,48 @@
 
 int main()
 {
-    int changeWindow {0};
     //esto es la ventana de tu grafico
     sf::RenderWindow* mainMenuWindow = new sf::RenderWindow(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), GAME_NAME);
     sf::RenderWindow* window = new sf::RenderWindow(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), GAME_NAME);
-    sf::RenderWindow* gameOverWindow = new sf::RenderWindow(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), GAME_NAME);
+    sf::RenderWindow* finalWindow = new sf::RenderWindow(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), GAME_NAME);
 
-    gameOverWindow->setVisible(false);
+    finalWindow->setVisible(false);
     window->setVisible(false);
     window->setActive(false);
 
-    //DECLARAMOS EL SONIDO DEL JUEGO
+    //DECLARAMOS LOS SONIDO DEL JUEGO
     sf::SoundBuffer* soundBuffer{new sf::SoundBuffer()};
     sf::Sound* sound {new sf::Sound()};
     soundBuffer->loadFromFile(BG_MUSIC1);
     sound->setBuffer(*soundBuffer);
+
+    sf::SoundBuffer* soundBufferMenu{new sf::SoundBuffer()};
+    sf::Sound* soundMenu {new sf::Sound()};
+    soundBufferMenu->loadFromFile(BG_MENU);
+    soundMenu->setBuffer(*soundBufferMenu);
+
+    sf::SoundBuffer* soundBufferLose{new sf::SoundBuffer()};
+    sf::Sound* soundLose {new sf::Sound()};
+    soundBufferLose->loadFromFile(BG_LOSE);
+    soundLose->setBuffer(*soundBufferLose);
     
+    sf::SoundBuffer* soundBufferWin{new sf::SoundBuffer()};
+    sf::Sound* soundWin {new sf::Sound()};
+    soundBufferWin->loadFromFile(BG_WIN);
+    soundWin->setBuffer(*soundBufferWin);
     
-    Button* buttonCloseGame{new Button(640.f,360.f,150.f,50.f,0.5f, new sf::Color(255,0,0), new sf::Color(255,255,255), gameOverWindow)};
-    Button* buttonStartGame{new Button(640.f,360.f,150.f,50.f,0.5f, new sf::Color(255,0,0), new sf::Color(255,255,255), mainMenuWindow)};
+    //DECLARAMOS LOS BOTONES
+    Button* buttonCloseGame{new Button(1100.f,80.f,70.f,70.f,0.5f, new sf::Color(255,0,0), new sf::Color(255,255,255), finalWindow)};
+    Button* buttonStartGame{new Button(275.f,440.f,260.f,115.f,0.5f, new sf::Color(255,0,0), new sf::Color(255,255,255), mainMenuWindow)};
+    Button* buttonMenuCloseGame{new Button(1100.f,80.f,70.f,70.f,0.5f, new sf::Color(255,0,0), new sf::Color(255,255,255), mainMenuWindow)};
 
     //aqui vas a guardar los eventos dentro de la ventana, eje: teclado, mouse, etc.
     sf::Event event;
-    sf::Event gameOverEvent;
+    sf::Event finalEvent;
     sf::Event mainMenuEvent;
 
     //CREAMOS EL SCORE
-    Score* score{new Score(FONT, "Puntos: ", 32, new sf::Vector2f(25,5), new sf::Color(255,255,255), window)};
+    Score* score{new Score(FONT, "Meat: ", 32, new sf::Vector2f(25,5), new sf::Color(255,255,255), window)};
 
     //Camara para seguir al jugador
     sf::View* followPlayer {new sf::View()};
@@ -73,6 +92,9 @@ int main()
     sf::Texture* gameOver {new sf::Texture()};
     gameOver->loadFromFile("assets/sprites/GameOver.png");
 
+    sf::Texture* gameWin {new sf::Texture()};
+    gameWin->loadFromFile("assets/sprites/GameWin.png");
+
     sf::Texture* mainMenu {new sf::Texture()};
     mainMenu->loadFromFile("assets/sprites/Menu.png");
 
@@ -81,6 +103,8 @@ int main()
     minaSprite->loadFromFile("assets/sprites/SPRITES-MINA.png");
 
     sf::Sprite* fondoGameOver {new sf::Sprite(*gameOver)};
+
+    sf::Sprite* fondoGameWin {new sf::Sprite(*gameWin)};
 
     sf::Sprite* fondoMainMenu {new sf::Sprite(*mainMenu)};
     
@@ -114,6 +138,9 @@ int main()
     //DECLARACION DE LOS TEXTURE DE LOS ESCENARIOS 
     sf::Texture* esAireLibre {new sf::Texture()};
     esAireLibre->loadFromFile(ESCENARIO_AIRE_LIBRE);
+
+    sf::Texture* obAireLibre {new sf::Texture()};
+    obAireLibre->loadFromFile(OBJETOS_AIRE_LIBRE);
 
     sf::Texture* objetosCampo {new sf::Texture()};
     objetosCampo->loadFromFile(OBJETOS_CAMPO);
@@ -152,29 +179,68 @@ int main()
         SPRITE_SCALE, SPRITE_SCALE, new b2Vec2(400,400),b2BodyType::b2_staticBody ,world, window)};
         treasure->SetTagName("treasure");
 
-        GameObject* treee{new GameObject(objetosCampo, 64*3, 64*2,64*1,64*1,
-        1, 1, new b2Vec2(2000,1000),b2BodyType::b2_staticBody ,world, window)};
 
     //CARNES PARA EL PERRO
-        GameObject* meat{new GameObject(spriteSheetDog, 64*1, 64*7,64,64,
-        1.5, 1.5, new b2Vec2(1000,1000),b2BodyType::b2_staticBody ,world, window)};
-        meat->SetTagName("meat");
         
         GameObject* meat1{new GameObject(spriteSheetDog, 64*1, 64*7,64,64,
-        1.5, 1.5, new b2Vec2(900,500),b2BodyType::b2_staticBody ,world, window)};
+        0.75, 0.75, new b2Vec2(1000,1000),b2BodyType::b2_staticBody ,world, window)};
         meat1->SetTagName("meat");
 
         GameObject* meat2{new GameObject(spriteSheetDog, 64*1, 64*7,64,64,
-        1.5, 1.5, new b2Vec2(1828,766),b2BodyType::b2_staticBody ,world, window)};
+        0.75, 0.75, new b2Vec2(1828,766),b2BodyType::b2_staticBody ,world, window)};
         meat2->SetTagName("meat");
 
         GameObject* meat3{new GameObject(spriteSheetDog, 64*1, 64*7,64,64,
-        1.5, 1.5, new b2Vec2(2304,384),b2BodyType::b2_staticBody ,world, window)};
+        0.75, 0.75, new b2Vec2(2304,400),b2BodyType::b2_staticBody ,world, window)};
         meat3->SetTagName("meat");
 
         GameObject* meat4{new GameObject(spriteSheetDog, 64*1, 64*7,64,64,
-        1.5, 1.5, new b2Vec2(2057,1390),b2BodyType::b2_staticBody ,world, window)};
+        0.75, 0.75, new b2Vec2(1305,1470),b2BodyType::b2_staticBody ,world, window)};
         meat4->SetTagName("meat");
+
+        GameObject* meat5{new GameObject(spriteSheetDog, 64*1, 64*7,64,64,
+        0.75, 0.75, new b2Vec2(3574,1510),b2BodyType::b2_staticBody ,world, window)};
+        meat5->SetTagName("meat");
+
+        GameObject* meat6{new GameObject(spriteSheetDog, 64*1, 64*7,64,64,
+        0.75, 0.75, new b2Vec2(2606,1498),b2BodyType::b2_staticBody ,world, window)};
+        meat6->SetTagName("meat");
+
+        GameObject* meat7{new GameObject(spriteSheetDog, 64*1, 64*7,64,64,
+        0.75, 0.75, new b2Vec2(4773,1000),b2BodyType::b2_staticBody ,world, window)};
+        meat7->SetTagName("meat");
+
+        GameObject* meat8{new GameObject(spriteSheetDog, 64*1, 64*7,64,64,
+        0.75, 0.75, new b2Vec2(2535,925),b2BodyType::b2_staticBody ,world, window)};
+        meat8->SetTagName("meat");
+
+        GameObject* meat9{new GameObject(spriteSheetDog, 64*1, 64*9,64,64,
+        0.75, 0.75, new b2Vec2(3493,644),b2BodyType::b2_staticBody ,world, window)};
+        meat9->SetTagName("meat");
+
+        GameObject* meat10{new GameObject(spriteSheetDog, 64*1, 64*9,64,64,
+        0.75, 0.75, new b2Vec2(4735,440),b2BodyType::b2_staticBody ,world, window)};
+        meat10->SetTagName("meat");
+
+        GameObject* meat11{new GameObject(spriteSheetDog, 64*1, 64*9,64,64,
+        0.75, 0.75, new b2Vec2(4180,549),b2BodyType::b2_staticBody ,world, window)};
+        meat11->SetTagName("meat");
+
+        GameObject* meat12{new GameObject(spriteSheetDog, 64*1, 64*8,64,64,
+        0.75, 0.75, new b2Vec2(5567,414),b2BodyType::b2_staticBody ,world, window)};
+        meat12->SetTagName("meat");
+
+        GameObject* meat13{new GameObject(spriteSheetDog, 64*1, 64*8,64,64,
+        0.75, 0.75, new b2Vec2(5545,1545),b2BodyType::b2_staticBody ,world, window)};
+        meat13->SetTagName("meat");
+
+        GameObject* meat14{new GameObject(spriteSheetDog, 64*1, 64*8,64,64,
+        0.75, 0.75, new b2Vec2(5962,1280),b2BodyType::b2_staticBody ,world, window)};
+        meat14->SetTagName("meat");
+
+        GameObject* meat15{new GameObject(spriteSheetDog, 64*1, 64*8,64,64,
+        0.75, 0.75, new b2Vec2(6568,422),b2BodyType::b2_staticBody ,world, window)};
+        meat15->SetTagName("meat");
     //TRAMPAS PARA EL PERRO
         GameObject* trampaPerro{new GameObject(spriteSheetDog, 64*1, 64*11,64,64,
         1, 1, new b2Vec2(1300,600),b2BodyType::b2_staticBody ,world, window)};
@@ -189,44 +255,199 @@ int main()
         trampaPerro2->SetTagName("enemy");
 
         GameObject* trampaPerro3{new GameObject(spriteSheetDog, 64*1, 64*11,64,64,
-        1, 1, new b2Vec2(2350,560),b2BodyType::b2_staticBody ,world, window)};
+        1, 1, new b2Vec2(2363,580),b2BodyType::b2_staticBody ,world, window)};
         trampaPerro3->SetTagName("enemy");
 
         GameObject* trampaPerro4{new GameObject(spriteSheetDog, 64*1, 64*11,64,64,
         1, 1, new b2Vec2(1247,1247),b2BodyType::b2_staticBody ,world, window)};
         trampaPerro4->SetTagName("enemy");
 
-        GameObject* tree{new GameObject(esAireLibre, 128*1.5, 128*1.5,128,128,
+        GameObject* trampaPerro5{new GameObject(spriteSheetDog, 64*1, 64*11,64,64,
+        1, 1, new b2Vec2(2496,1445),b2BodyType::b2_staticBody ,world, window)};
+        trampaPerro5->SetTagName("enemy");
+
+        GameObject* trampaPerro6{new GameObject(spriteSheetDog, 64*1, 64*11,64,64,
+        1, 1, new b2Vec2(2496,1545),b2BodyType::b2_staticBody ,world, window)};
+        trampaPerro6->SetTagName("enemy");
+
+        GameObject* trampaPerro7{new GameObject(spriteSheetDog, 64*1, 64*11,64,64,
+        1, 1, new b2Vec2(2875,1439),b2BodyType::b2_staticBody ,world, window)};
+        trampaPerro7->SetTagName("enemy");
+
+        GameObject* trampaPerro8{new GameObject(spriteSheetDog, 64*1, 64*11,64,64,
+        1, 1, new b2Vec2(4127,1152),b2BodyType::b2_staticBody ,world, window)};
+        trampaPerro8->SetTagName("enemy");
+
+        GameObject* trampaPerro9{new GameObject(spriteSheetDog, 64*1, 64*11,64,64,
+        1, 1, new b2Vec2(4800,1535),b2BodyType::b2_staticBody ,world, window)};
+        trampaPerro9->SetTagName("enemy");
+
+        GameObject* trampaPerro10{new GameObject(spriteSheetDog, 64*1, 64*11,64,64,
+        1, 1, new b2Vec2(4320,1229),b2BodyType::b2_staticBody ,world, window)};
+        trampaPerro10->SetTagName("enemy");
+
+        GameObject* trampaPerro11{new GameObject(spriteSheetDog, 64*1, 64*11,64,64,
+        1, 1, new b2Vec2(4420,863),b2BodyType::b2_staticBody ,world, window)};
+        trampaPerro11->SetTagName("enemy");
+
+        GameObject* trampaPerro12{new GameObject(spriteSheetDog, 64*1, 64*11,64,64,
+        1, 1, new b2Vec2(3199,975),b2BodyType::b2_staticBody ,world, window)};
+        trampaPerro12->SetTagName("enemy");
+
+        GameObject* trampaPerro13{new GameObject(spriteSheetDog, 64*1, 64*11,64,64,
+        1, 1, new b2Vec2(2363,510),b2BodyType::b2_staticBody ,world, window)};
+        trampaPerro13->SetTagName("enemy");
+
+        GameObject* trampaPerro14{new GameObject(spriteSheetDog, 64*1, 64*11,64,64,
+        1, 1, new b2Vec2(2708,426),b2BodyType::b2_staticBody ,world, window)};
+        trampaPerro14->SetTagName("enemy");
+
+        GameObject* trampaPerro15{new GameObject(spriteSheetDog, 64*1, 64*11,64,64,
+        1, 1, new b2Vec2(3654,667),b2BodyType::b2_staticBody ,world, window)};
+        trampaPerro15->SetTagName("enemy");
+
+        GameObject* trampaPerro16{new GameObject(spriteSheetDog, 64*1, 64*11,64,64,
+        1, 1, new b2Vec2(3654,405),b2BodyType::b2_staticBody ,world, window)};
+        trampaPerro16->SetTagName("enemy");
+
+        GameObject* trampaPerro17{new GameObject(spriteSheetDog, 64*1, 64*11,64,64,
+        1, 1, new b2Vec2(4200,671),b2BodyType::b2_staticBody ,world, window)};
+        trampaPerro17->SetTagName("enemy");
+
+        GameObject* trampaPerro18{new GameObject(spriteSheetDog, 64*1, 64*11,64,64,
+        1, 1, new b2Vec2(4200,395),b2BodyType::b2_staticBody ,world, window)};
+        trampaPerro18->SetTagName("enemy");
+
+        GameObject* trampaPerro19{new GameObject(spriteSheetDog, 64*1, 64*11,64,64,
+        1, 1, new b2Vec2(4747,570),b2BodyType::b2_staticBody ,world, window)};
+        trampaPerro19->SetTagName("enemy");
+
+        GameObject* trampaPerro20{new GameObject(spriteSheetDog, 64*1, 64*11,64,64,
+        1, 1, new b2Vec2(1676,1492),b2BodyType::b2_staticBody ,world, window)};
+        trampaPerro20->SetTagName("enemy");
+
+        GameObject* trampaPerro21{new GameObject(spriteSheetDog, 64*1, 64*11,64,64,
+        1, 1, new b2Vec2(2208,808),b2BodyType::b2_staticBody ,world, window)};
+        trampaPerro21->SetTagName("enemy");
+
+        //PICOS
+        GameObject* pico1{new GameObject(esAireLibre, 64*27, 64*7,64,64,
+        1.5, 1.5, new b2Vec2(5760,672),b2BodyType::b2_staticBody ,world, window)};
+        pico1->SetTagName("enemy");
+
+        GameObject* pico2{new GameObject(esAireLibre, 64*27, 64*7,64,64,
+        1.5, 1.5, new b2Vec2(5376,1020),b2BodyType::b2_staticBody ,world, window)};
+        pico2->SetTagName("enemy");
+
+        GameObject* pico3{new GameObject(esAireLibre, 64*27, 64*7,64,64,
+        1.5, 1.5, new b2Vec2(5568,1322),b2BodyType::b2_staticBody ,world, window)};
+        pico3->SetTagName("enemy");
+
+        GameObject* pico4{new GameObject(esAireLibre, 64*27, 64*7,64,64,
+        1.5, 1.5, new b2Vec2(6050,864),b2BodyType::b2_staticBody ,world, window)};
+        pico4->SetTagName("enemy");
+
+        GameObject* pico5{new GameObject(esAireLibre, 64*27, 64*7,64,64,
+        1.5, 1.5, new b2Vec2(6434,672),b2BodyType::b2_staticBody ,world, window)};
+        pico5->SetTagName("enemy");
+
+        GameObject* pico6{new GameObject(esAireLibre, 64*27, 64*7,64,64,
+        1.5, 1.5, new b2Vec2(6720,934),b2BodyType::b2_staticBody ,world, window)};
+        pico6->SetTagName("enemy");
+
+        GameObject* pico7{new GameObject(esAireLibre, 64*27, 64*7,64,64,
+        1.5, 1.5, new b2Vec2(6148,1344),b2BodyType::b2_staticBody ,world, window)};
+        pico7->SetTagName("enemy");
+
+        GameObject* pico8{new GameObject(esAireLibre, 64*27, 64*7,64,64,
+        1.5, 1.5, new b2Vec2(5856,1152),b2BodyType::b2_staticBody ,world, window)};
+        pico8->SetTagName("enemy");
+
+        GameObject* pico9{new GameObject(esAireLibre, 64*27, 64*7,64,64,
+        1.5, 1.5, new b2Vec2(6392,1040),b2BodyType::b2_staticBody ,world, window)};
+        pico9->SetTagName("enemy");
+
+        GameObject* pico10{new GameObject(esAireLibre, 64*27, 64*7,64,64,
+        1.5, 1.5, new b2Vec2(6152,864),b2BodyType::b2_staticBody ,world, window)};
+        pico10->SetTagName("enemy");
+
+        GameObject* pico11{new GameObject(esAireLibre, 64*27, 64*7,64,64,
+        1.5, 1.5, new b2Vec2(5190,480),b2BodyType::b2_staticBody ,world, window)};
+        pico11->SetTagName("enemy");
+
+        GameObject* pico12{new GameObject(esAireLibre, 64*27, 64*7,64,64,
+        1.5, 1.5, new b2Vec2(5568,564),b2BodyType::b2_staticBody ,world, window)};
+        pico12->SetTagName("enemy");
+
+        GameObject* pico13{new GameObject(esAireLibre, 64*27, 64*7,64,64,
+        1.5, 1.5, new b2Vec2(6720,578),b2BodyType::b2_staticBody ,world, window)};
+        pico13->SetTagName("enemy");
+        
+
+        GameObject* tree{new GameObject(obAireLibre, 128*1.5, 128*1.5,128,128,
         2, 2, new b2Vec2(100,600),b2BodyType::b2_staticBody ,world, window)};
 
-        GameObject* tree1{new GameObject(esAireLibre, 128*1.5, 128*1.5,128,128,
-        2, 2, new b2Vec2(3750,1400),b2BodyType::b2_staticBody ,world, window)};
+        GameObject* tree1{new GameObject(obAireLibre, 128*1.5, 128*1.5,128,128,
+        2, 2, new b2Vec2(3750,1450),b2BodyType::b2_staticBody ,world, window)};
 
-        GameObject* tronco{new GameObject(esAireLibre, 128*1.5, 64*5,128,64,
-        2, 2, new b2Vec2(1000,900),b2BodyType::b2_staticBody ,world, window)};
 
     //CREAR VECTOR CON LOS GAME OBJECT
         std::vector<GameObject*>* items{new std::vector<GameObject*>()};
-        items->push_back(treasure);
-        items->push_back(trampaPerro);
         items->push_back(tree);
         items->push_back(tree1);
-        items->push_back(treee);
-        items->push_back(tronco);
     //AGREGAR CARNES AL MAPA
-        items->push_back(meat); 
         items->push_back(meat1);
         items->push_back(meat2);
         items->push_back(meat3);
         items->push_back(meat4);
+        items->push_back(meat5);
+        items->push_back(meat6);
+        items->push_back(meat7);
+        items->push_back(meat8);
+        items->push_back(meat9);
+        items->push_back(meat10);
+        items->push_back(meat11);
+        items->push_back(meat12);
+        items->push_back(meat13);
+        items->push_back(meat14);
+        items->push_back(meat15);
     //AGREGAR TRAMPAS PARA EL PERRO     
         items->push_back(trampaPerro);
         items->push_back(trampaPerro1);
         items->push_back(trampaPerro2);
         items->push_back(trampaPerro3);
         items->push_back(trampaPerro4);
-    //ANIMACIONES TRAMPA
-    Animation* trampaPerroAnimation {new Animation(11, 1,10, trampaPerro->GetSprite(), 50.f)}; 
+        items->push_back(trampaPerro5);
+        items->push_back(trampaPerro6);
+        items->push_back(trampaPerro7);
+        items->push_back(trampaPerro8);
+        items->push_back(trampaPerro9);
+        items->push_back(trampaPerro10);
+        items->push_back(trampaPerro11);
+        items->push_back(trampaPerro12);
+        items->push_back(trampaPerro13);
+        items->push_back(trampaPerro14);
+        items->push_back(trampaPerro15);
+        items->push_back(trampaPerro16);
+        items->push_back(trampaPerro17);
+        items->push_back(trampaPerro18);
+        items->push_back(trampaPerro19);
+        items->push_back(trampaPerro20);
+        items->push_back(trampaPerro21);
+    // PICOS
+        items->push_back(pico1);
+        items->push_back(pico2);
+        items->push_back(pico3);
+        items->push_back(pico4);
+        items->push_back(pico5);
+        items->push_back(pico6);
+        items->push_back(pico7);
+        items->push_back(pico8);
+        items->push_back(pico9);
+        items->push_back(pico10);
+        items->push_back(pico11);
+        items->push_back(pico12);
+        items->push_back(pico13);
 
     //DEFINIR EL CONTACTLISTENER PARA LAS COLLISIONES
     ContactListener* contactListener{new ContactListener(score, items)};
@@ -240,6 +461,9 @@ int main()
     Maze*& currentMaze{*&mapAireLibre};
 
     // WINDOW MAIN MENU
+    soundMenu->setVolume(5.0f);
+    soundMenu->setLoop(true);
+    soundMenu->play();
     while (mainMenuWindow->isOpen())
             {
                 while (mainMenuWindow->pollEvent(mainMenuEvent))
@@ -253,18 +477,24 @@ int main()
                 mainMenuWindow->clear(*(new sf::Color(0, 255, 0, 255)));//limpiar la pantalla  
 
                 
-                
-                mainMenuWindow->draw(*fondoMainMenu);
                 buttonStartGame->UpdateStart();
+                buttonMenuCloseGame->Update();
+                mainMenuWindow->draw(*fondoMainMenu);
+                
+                if (buttonMenuCloseGame->findWindow() == 3)
+                    {
+                        return 0;
+                    }
 
                 if (buttonStartGame->findWindow() == 2)
                 {
+                    soundMenu->stop();
                     mainMenuWindow->setVisible(false);
                     mainMenuWindow->setActive(false);
                     window->setVisible(true);
                     window->setActive(true);
 
-                    sound->setVolume(0.5f);
+                    sound->setVolume(5.f);
                     sound->setLoop(true);
                     sound->play();
 
@@ -290,18 +520,6 @@ int main()
                             }
                         }
 
-                        switch (contactListener->GetSceneIndex())
-                        {
-                            case 0:
-                                currentMaze = mapAireLibre;
-                                break;
-                            case 1:
-                                currentMaze = maze1;
-                                break;
-                            default:
-                                currentMaze = mapAireLibre;
-                                break;
-                        }
 
                         Vec2* keyboardAxis {inputs->GetKeyboardAxis()};
                         Vec2* joystickAxis {inputs->GetJoystickAxis()};
@@ -357,12 +575,7 @@ int main()
 
                         followPlayer->setCenter(character->GetCharacterPosition().x,character->GetCharacterPosition().y);
 
-                        //miniMap->setCenter(character->GetCharacterPosition().x, 360.f);
                         miniMap->setCenter(followPlayer->getCenter().x, followPlayer->getCenter().y);
-
-
-                        //SE LE RESTA LA MITAD DE LAS DIMENSIONES PARA QUE EL PERSONAJE QUEDE CENTRADO CON LA IMAGEN EN TODO MOMENTO
-                        //fondo->setPosition(character->GetCharacterPosition().x - 640.f, character->GetCharacterPosition().y - 360.f);
                         
 
                         
@@ -375,7 +588,6 @@ int main()
                         //CAMARA DEL JUEGO PRINCIPAL
                         window->setView(*followPlayer);
 
-                        //window->draw(*fondo); 
 
                         for (auto& tile: *mapAireLibre->GetContainer())
                         {
@@ -388,61 +600,97 @@ int main()
                         }
 
 
-                        trampaPerroAnimation->Play(deltaTime);
-                        
-                        window->draw(*floorSpike);
                         //window->draw(*trampaPerro);
                         character->Update();
                         
                         score->update(followPlayer->getCenter().x -630, followPlayer->getCenter().y -360);
 
-                        //SI PIERDE
-                        if(contactListener->IsGameOver())
-                        {
-                            std::cout << "Perdiste" << std::endl;
-                        }
-                        contactListener->ResetGameOver(false);
+                        //SI GANA
 
-                        if (score->GetPoints()>20)
+                        if (score->GetPoints()==15)
                         {
-                            std::cout << "Perdiste" << std::endl;
+                            std::cout << "Ganaste" << std::endl;
                             window->setVisible(false);
                             window->setActive(false);
-                            gameOverWindow->setVisible(true);
+                            finalWindow->setVisible(true);
                             sound->stop();
 
+                            soundWin->setVolume(5.0f);
+                            soundWin->setLoop(true);
+                            soundWin->play();
 
 
 
 
-                            //WINDOW DEL GAME OVER
-                            while (gameOverWindow->isOpen())
+                            //WINDOW DEL win
+                            while (finalWindow->isOpen())
                             {
-                                while (gameOverWindow->pollEvent(gameOverEvent))
+                                while (finalWindow->pollEvent(finalEvent))
                                 {
-                                    if (gameOverEvent.type == sf::Event::Closed)
+                                    if (finalEvent.type == sf::Event::Closed)
                                     {
-                                        gameOverWindow->close();
+                                        finalWindow->close();
                                         return 0;
                                     }
                                 }
-                                gameOverWindow->clear(*(new sf::Color(0, 255, 0, 255)));//limpiar la pantalla  
+                                finalWindow->clear(*(new sf::Color(0, 255, 0, 255)));//limpiar la pantalla  
 
                                 
                                 buttonCloseGame->Update();
-                                gameOverWindow->draw(*fondoGameOver);
+                                finalWindow->draw(*fondoGameWin);
                                 
 
                                 if (buttonCloseGame->findWindow() == 3)
                                 {
                                     return 0;
                                 }
-                                gameOverWindow->display();
+                                finalWindow->display();
                             }
 
 
                             
                         } 
+
+                        //SI PIERDE
+                        if (contactListener->IsGameOver())
+                        {
+                            std::cout << "Perdiste" << std::endl;
+                            window->setVisible(false);
+                            window->setActive(false);
+                            finalWindow->setVisible(true);
+                            sound->stop();
+
+                            soundLose->setVolume(5.0f);
+                            soundLose->setLoop(true);
+                            soundLose->play();
+
+
+
+                            //WINDOW DEL GAME OVER
+                            while (finalWindow->isOpen())
+                            {
+                                while (finalWindow->pollEvent(finalEvent))
+                                {
+                                    if (finalEvent.type == sf::Event::Closed)
+                                    {
+                                        finalWindow->close();
+                                        return 0;
+                                    }
+                                }
+                                finalWindow->clear(*(new sf::Color(0, 255, 0, 255)));//limpiar la pantalla  
+
+                                
+                                buttonCloseGame->Update();
+                                finalWindow->draw(*fondoGameOver);
+                                
+
+                                if (buttonCloseGame->findWindow() == 3)
+                                {
+                                    return 0;
+                                }
+                                finalWindow->display();
+                            }
+                        }
 
                         
 
@@ -483,7 +731,7 @@ int main()
 
 
 
-                
+
                 mainMenuWindow->display();
             }
         

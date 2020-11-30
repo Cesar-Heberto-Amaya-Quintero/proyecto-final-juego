@@ -8,6 +8,7 @@
 
 ContactListener::ContactListener(Score*& score, std::vector<GameObject*>*& items)
 {
+    sfx = new SFX();
     this->score = score;
     this->items = items;
 }
@@ -27,26 +28,21 @@ void ContactListener::BeginContact(b2Contact* contact)
     GameObject* bodyDataB = (GameObject*) contact->GetFixtureB()->GetBody()->GetUserData();
     if (bodyDataA && bodyDataB)
     {
-        if (std::strcmp(bodyDataA->GetTagName(), "player") == 0 && std::strcmp(bodyDataB->GetTagName(), "treasure") ==0)
-        {   //SI son iguales por eso el 0
-            
-            score->AddPoints(10);
-            //items->erase(std::remove(items->begin(), items->end(), bodyDataB), items->end());
-            //bodyDataB->~GameObject();
-            
-        }
+
         if(std::strcmp(bodyDataA->GetTagName(), "player") == 0 && std::strcmp(bodyDataB->GetTagName(), "meat") == 0)
         {
-            score->AddPoints(10);
+            score->AddPoints(1);
             //std::cout << "stairs" << std::endl;
             items->erase(std::remove(items->begin(), items->end(), bodyDataB), items->end());
             bodyDataB->~GameObject();
+            sfx->PlaySFX(0);
         }
         if(std::strcmp(bodyDataA->GetTagName(), "player") == 0 && std::strcmp(bodyDataB->GetTagName(), "enemy") == 0)
         {
             gameOver=true;
             items->erase(std::remove(items->begin(), items->end(), bodyDataB), items->end());
             bodyDataB->~GameObject();
+            sfx->PlaySFX(1);
         }
 
     }

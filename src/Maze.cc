@@ -45,103 +45,67 @@ void Maze::Generate()
             char &tile{tiles[i][j]};
 
             //tileBaseWidht vale 64
-            //La letra # = pisoesquinaIzquierda, - = piso en medio, $= piso esquina derecha, g=Ground1, f=ground2, s= wallWater, c=floorWater
-            // e= wallFire t=floorFire d=floorStairs x=floorBroken
+
             switch (tile)
             {
             //ESCENARIO CAMPO
             //PRIMERA FILA
-            case 'a':
+            case 'a'://Cesped
                 container->push_back(new Tile(cropSize * 1, cropSize * 1, scale, cropSize, texture));
                 break;
-            case 'b':
+            case 'b'://Cesped Flores Rojas
                 container->push_back(new Tile(cropSize * 2, cropSize * 1, scale, cropSize, texture));
                 break;
-            case 'c':
+            case 'c'://Tierra
                 container->push_back(new Tile(cropSize * 3, cropSize * 1, scale, cropSize, texture));
                 break;
-            case 'd':
+            case 'd'://Tierra Flores Azules 
                 container->push_back(new Tile(cropSize * 4, cropSize * 1, scale, cropSize, texture));
                 break;
-            case 'e':
-                container->push_back(new Tile(cropSize * 5, cropSize * 1, scale, cropSize, texture));
-                break;
-            case 'f':
-                container->push_back(new Tile(cropSize * 6, cropSize * 1, scale, cropSize, texture));
-                break;
+
             //SEGUNDA FILA
-            case 'g':
+            case 'g'://Cesped Flores Rosas
                 container->push_back(new Tile(cropSize * 1, cropSize * 2, scale, cropSize, texture));
                 break;
-            case 'h':
+            case 'h'://Cesped Rocas
                 container->push_back(new Tile(cropSize * 2, cropSize * 2, scale, cropSize, texture));
                 break;
             case 'i':
                 container->push_back(new Tile(cropSize * 3, cropSize * 2, scale, cropSize, texture));
                 break;
-            case 'j':
+            case 'j'://Tierra Flores blancas 
                 container->push_back(new Tile(cropSize * 4, cropSize * 2, scale, cropSize, texture));
                 break;
-            case 'k':
-                container->push_back(new Tile(cropSize * 5, cropSize * 2, scale, cropSize, texture));
-                break;
-            case 'l':
-                container->push_back(new Tile(cropSize * 6, cropSize * 2, scale, cropSize, texture));
-                break;
-            case 'm':
-                container->push_back(new Tile(cropSize * 1, cropSize * 6, scale, cropSize, texture));
-                break;
-            //ESCENARIO PLAYA
-            //PRIMERA FILA
-            //ARENA
-            case 'A':
-                container->push_back(new Tile(cropSize * 9, cropSize * 1, scale, cropSize, texture));
-                break;
-            case 'B':
-                container->push_back(new Tile(cropSize * 10, cropSize * 1, scale, cropSize, texture));
-                break;
-            case 'C':
+
+            case 'C': //Arena
                 container->push_back(new Tile(cropSize * 11, cropSize * 1, scale, cropSize, texture));
                 break;
-            case 'D':
-                container->push_back(new Tile(cropSize * 12, cropSize * 1, scale, cropSize, texture));
-                break;
-            case 'E':
-                container->push_back(new Tile(cropSize * 13, cropSize * 1, scale, cropSize, texture));
-                break;
-            case 'F':
-                container->push_back(new Tile(cropSize * 14, cropSize * 1, scale, cropSize, texture));
-                break;
+
                 //AGUA
             case 'G':
-                container->push_back(new Tile(cropSize * 15, cropSize * 1, scale, cropSize, texture));
+                container->push_back(new Tile(cropSize * 15, cropSize * 1, scale, cropSize, texture, world));
+                container->back()->TurnPhysicsOn(cropSize * scale * j, cropSize * scale * i);
                 break;
             case 'H':
-                container->push_back(new Tile(cropSize * 16, cropSize * 1, scale, cropSize, texture));
+                container->push_back(new Tile(cropSize * 16, cropSize * 1, scale, cropSize, texture, world));
+                container->back()->TurnPhysicsOn(cropSize * scale * j, cropSize * scale * i);
                 break;
             case 'I':
                 container->push_back(new Tile(cropSize * 17, cropSize * 1, scale, cropSize, texture));
                 break;
             //SEGUNDA FILA
             //ARENA
-            case 'J':
+            case 'J'://Coco abierto
                 container->push_back(new Tile(cropSize * 9, cropSize * 2, scale, cropSize, texture));
                 break;
-            case 'K':
-                container->push_back(new Tile(cropSize * 10, cropSize * 2, scale, cropSize, texture));
-                break;
-            case 'L':
+
+            case 'L'://Estrella Amarilla
                 container->push_back(new Tile(cropSize * 11, cropSize * 2, scale, cropSize, texture));
                 break;
-            case 'M':
+            case 'M'://Estrella Morada
                 container->push_back(new Tile(cropSize * 12, cropSize * 2, scale, cropSize, texture));
                 break;
-            case 'N':
-                container->push_back(new Tile(cropSize * 13, cropSize * 2, scale, cropSize, texture));
-                break;
-            case 'R':
-                container->push_back(new Tile(cropSize * 14, cropSize * 2, scale, cropSize, texture));
-                break;
+
                 //AGUA
             case 'O':
                 container->push_back(new Tile(cropSize * 15, cropSize * 2, scale, cropSize, texture));
@@ -155,76 +119,93 @@ void Maze::Generate()
             case 'S':
                 container->push_back(new Tile(cropSize * 18, cropSize * 2, scale, cropSize, texture));
                 break;
-            //ESCENARIO CALABOZO Y LAVA
-            //CALABOZO PISO FILA 1
-            case 'n':
-                container->push_back(new Tile(cropSize * 20, cropSize * 1, scale, cropSize, texture));
-                break;
-            case 'o':
-                container->push_back(new Tile(cropSize * 21, cropSize * 1, scale, cropSize, texture));
-                break;
-            case 'p':
-                container->push_back(new Tile(cropSize * 22, cropSize * 1, scale, cropSize, texture));
-                break;
-            case 'q':
-                container->push_back(new Tile(cropSize * 23, cropSize * 1, scale, cropSize, texture));
-                break;
-            case 'r':
-                container->push_back(new Tile(cropSize * 24, cropSize * 1, scale, cropSize, texture));
-                break;
-            case 's':
-                container->push_back(new Tile(cropSize * 25, cropSize * 1, scale, cropSize, texture));
-                break;
-                //CALABOZO PISO FILA 2
-            case 't':
+                //LAVA
+                //Pisos
+            case 'u':
                 container->push_back(new Tile(cropSize * 20, cropSize * 2, scale, cropSize, texture));
                 break;
-            case 'u':
+            case 'v':
                 container->push_back(new Tile(cropSize * 21, cropSize * 2, scale, cropSize, texture));
                 break;
-            case 'v':
+            case 'W':
                 container->push_back(new Tile(cropSize * 22, cropSize * 2, scale, cropSize, texture));
                 break;
-            case 'W':
+            case 'X':
                 container->push_back(new Tile(cropSize * 23, cropSize * 2, scale, cropSize, texture));
                 break;
-            case 'X':
+            case 'Y':
                 container->push_back(new Tile(cropSize * 24, cropSize * 2, scale, cropSize, texture));
                 break;
-                //CALABOZO PICOS
-            case 'Y':
-                container->push_back(new Tile(cropSize * 27, cropSize * 4, scale, cropSize, texture, world));
+            case 'w':
+                container->push_back(new Tile(cropSize * 25, cropSize * 2, scale, cropSize, texture));
+                break;
+            case 'x'://Calavera
+                container->push_back(new Tile(cropSize * 26, cropSize * 2, scale, cropSize, texture, world));
                 container->back()->TurnPhysicsOn(cropSize * scale * j, cropSize * scale * i);
                 break;
-                //CALABOZO PAREDES FILA 3
-            case 'w':
+                //ROCAS fila 3
+            case 'y':
                 container->push_back(new Tile(cropSize * 20, cropSize * 3, scale, cropSize, texture, world));
                 container->back()->TurnPhysicsOn(cropSize * scale * j, cropSize * scale * i);
                 break;
-            case 'x':
+            case 'z':
                 container->push_back(new Tile(cropSize * 21, cropSize * 3, scale, cropSize, texture, world));
                 container->back()->TurnPhysicsOn(cropSize * scale * j, cropSize * scale * i);
                 break;
-            case 'y':
+            case 'T':
                 container->push_back(new Tile(cropSize * 22, cropSize * 3, scale, cropSize, texture, world));
                 container->back()->TurnPhysicsOn(cropSize * scale * j, cropSize * scale * i);
                 break;
-            case 'z':
+            case 'U':
                 container->push_back(new Tile(cropSize * 23, cropSize * 3, scale, cropSize, texture, world));
                 container->back()->TurnPhysicsOn(cropSize * scale * j, cropSize * scale * i);
                 break;
-            case 'T':
+            case 'V':
                 container->push_back(new Tile(cropSize * 24, cropSize * 3, scale, cropSize, texture, world));
                 container->back()->TurnPhysicsOn(cropSize * scale * j, cropSize * scale * i);
                 break;
-            case 'U':
+            case ']':
                 container->push_back(new Tile(cropSize * 25, cropSize * 3, scale, cropSize, texture, world));
                 container->back()->TurnPhysicsOn(cropSize * scale * j, cropSize * scale * i);
                 break;
-            case 'V':
-                container->push_back(new Tile(cropSize * 26, cropSize * 3, scale, cropSize, texture, world));
+                //Lava fila 4
+            case '0':
+                container->push_back(new Tile(cropSize * 20, cropSize * 4, scale, cropSize, texture, world));
                 container->back()->TurnPhysicsOn(cropSize * scale * j, cropSize * scale * i);
                 break;
+            case 'n':
+                container->push_back(new Tile(cropSize * 21, cropSize * 4, scale, cropSize, texture, world));
+                container->back()->TurnPhysicsOn(cropSize * scale * j, cropSize * scale * i);
+                break;
+            case 'o':
+                container->push_back(new Tile(cropSize * 22, cropSize * 4, scale, cropSize, texture, world));
+                container->back()->TurnPhysicsOn(cropSize * scale * j, cropSize * scale * i);
+                break;
+            case 'p':
+                container->push_back(new Tile(cropSize * 23, cropSize * 4, scale, cropSize, texture, world));
+                container->back()->TurnPhysicsOn(cropSize * scale * j, cropSize * scale * i);
+                break;
+            case 'q':
+                container->push_back(new Tile(cropSize * 24, cropSize * 4, scale, cropSize, texture, world));
+                container->back()->TurnPhysicsOn(cropSize * scale * j, cropSize * scale * i);
+                break;
+            case 'r':
+                container->push_back(new Tile(cropSize * 25, cropSize * 4, scale, cropSize, texture, world));
+                container->back()->TurnPhysicsOn(cropSize * scale * j, cropSize * scale * i);
+                break;
+            case 's':
+                container->push_back(new Tile(cropSize * 26, cropSize * 4, scale, cropSize, texture, world));
+                container->back()->TurnPhysicsOn(cropSize * scale * j, cropSize * scale * i);
+                break;
+            case 't':
+                container->push_back(new Tile(cropSize * 27, cropSize * 4, scale, cropSize, texture, world));
+                container->back()->TurnPhysicsOn(cropSize * scale * j, cropSize * scale * i);
+                break;
+                //Picos
+            case 'A':
+                container->push_back(new Tile(cropSize * 27, cropSize * 8, scale, cropSize, texture));
+                break;
+           
                 //LIMITES
                 //AIRE LIBRE
             case '-':
@@ -236,7 +217,7 @@ void Maze::Generate()
                 container->push_back(new Tile(cropSize * 1, cropSize * 8, scale, cropSize, texture, world));
                 container->back()->TurnPhysicsOn(cropSize * scale * j, cropSize * scale * i);
                 break;
-            case '#': 
+            case '#': //Medio
                 container->push_back(new Tile(cropSize * 1, cropSize * 9, scale, cropSize, texture, world));
                 container->back()->TurnPhysicsOn(cropSize * scale * j, cropSize * scale * i);
                 break;
@@ -338,14 +319,80 @@ void Maze::Generate()
                 container->push_back(new Tile(cropSize * 5, cropSize * 13, scale, cropSize, texture, world));
                 container->back()->TurnPhysicsOn(cropSize * scale * j, cropSize * scale * i);
                 break;
+                //OBJETOS ESCENARIO
+            case '1': //tronco parte izq
+                container->push_back(new Tile(cropSize * 4, cropSize * 5, scale, cropSize, texture, world));
+                container->back()->TurnPhysicsOn(cropSize * scale * j, cropSize * scale * i);
+                break; 
+            case '2': //tronco parte der
+                container->push_back(new Tile(cropSize * 5, cropSize * 5, scale, cropSize, texture, world));
+                container->back()->TurnPhysicsOn(cropSize * scale * j, cropSize * scale * i);
+                break;
+            case 'F': //tronco parte izq TIERRA
+                container->push_back(new Tile(cropSize * 4, cropSize * 3, scale, cropSize, texture, world));
+                container->back()->TurnPhysicsOn(cropSize * scale * j, cropSize * scale * i);
+                break; 
+            case 'N': //tronco parte der TIERRA
+                container->push_back(new Tile(cropSize * 5, cropSize * 3, scale, cropSize, texture, world));
+                container->back()->TurnPhysicsOn(cropSize * scale * j, cropSize * scale * i);
+                break;    
+            case '3': //Letrero
+                container->push_back(new Tile(cropSize * 6, cropSize * 4, scale, cropSize, texture, world));
+                container->back()->TurnPhysicsOn(cropSize * scale * j, cropSize * scale * i);
+                break;             
+            case 'R': //Barril
+                container->push_back(new Tile(cropSize * 7, cropSize * 4, scale, cropSize, texture, world));
+                container->back()->TurnPhysicsOn(cropSize * scale * j, cropSize * scale * i);
+                break;    
                 //TRANSICIONES DE ESCENARIOS
             case 'Z': // Alt 16
                 container->push_back(new Tile(cropSize * 9, cropSize * 9, scale, cropSize, texture));
                 break;
             case '?':
+                container->push_back(new Tile(cropSize * 10, cropSize * 9, scale, cropSize, texture));
+                break;
+            case '4': //agua a cesped
+                container->push_back(new Tile(cropSize * 9, cropSize * 7, scale, cropSize, texture));
+                break;
+            case '5': //tierra a arena vertical
                 container->push_back(new Tile(cropSize * 9, cropSize * 10, scale, cropSize, texture));
-                break;          
-
+                break;                
+            case '6': //tierra a arena vertical
+                container->push_back(new Tile(cropSize * 10, cropSize * 10, scale, cropSize, texture));
+                break;
+            case '7': //tierra a cesped izq
+                container->push_back(new Tile(cropSize * 11, cropSize * 10, scale, cropSize, texture));
+                break;  
+            case '8': //tierra a cesped der
+                container->push_back(new Tile(cropSize * 12, cropSize * 10, scale, cropSize, texture));
+                break;
+            case '9': //cesped a agua parte sup
+                container->push_back(new Tile(cropSize * 10, cropSize * 7, scale, cropSize, texture));
+                break;
+                    //CONEXIONES LAVA
+            case 'e':
+                container->push_back(new Tile(cropSize * 20, cropSize * 9, scale, cropSize, texture));
+                break;
+            case 'f':
+                container->push_back(new Tile(cropSize * 21, cropSize * 9, scale, cropSize, texture));
+                break;
+            case 'k':
+                container->push_back(new Tile(cropSize * 22, cropSize * 9, scale, cropSize, texture, world));
+                container->back()->TurnPhysicsOn(cropSize * scale * j, cropSize * scale * i);
+                break;
+            case 'l':
+                container->push_back(new Tile(cropSize * 23, cropSize * 9, scale, cropSize, texture));
+                break;
+            case 'm':
+                container->push_back(new Tile(cropSize * 24, cropSize * 9, scale, cropSize, texture, world));
+                container->back()->TurnPhysicsOn(cropSize * scale * j, cropSize * scale * i);
+                break;     
+            case 'B':
+                container->push_back(new Tile(cropSize * 25, cropSize * 9, scale, cropSize, texture));
+                break;
+            case 'D':
+                container->push_back(new Tile(cropSize * 26, cropSize * 9, scale, cropSize, texture));
+                break;    
             default:
                 break;
             }

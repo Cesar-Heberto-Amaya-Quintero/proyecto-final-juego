@@ -4,7 +4,7 @@ Score::Score(const char* fontUrl, std::string text, unsigned int fontSize, sf::V
 {
     font->loadFromFile(fontUrl);
     scoreText->setFont(*font);
-    scoreText->setString(text + "0");
+    scoreText->setString(text + "0" + "/15");
     scoreText->setFillColor(*fillColor);
     scoreText->setCharacterSize(fontSize);
     this->text = text;
@@ -26,7 +26,7 @@ void Score::update(float posX, float posY)
 void Score::AddPoints(unsigned int points)
 {
     score+= points;
-    scoreText->setString(text + std::to_string(score));
+    scoreText->setString(text + std::to_string(score)+ "/15");
 }
 
 unsigned int Score::GetPoints() const 
