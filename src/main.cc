@@ -29,7 +29,7 @@
 #define BG_WIN "assets/audio/win.ogg" 
 #define SPRITE_SCALE 4.f
 #define PLAYER_MOVESPEED 20.0f
-#define FPS 244
+#define FPS 240
 #define FONT "assets/fonts/NerkoOne-Regular.ttf"
 
 int main()
