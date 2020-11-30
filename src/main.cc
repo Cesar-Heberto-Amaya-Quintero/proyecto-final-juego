@@ -15,13 +15,14 @@
 
 #define WINDOW_WIDTH 1280
 #define WINDOW_HEIGHT 720
-#define GAME_NAME "JUEGUITO"
+#define GAME_NAME "Wild Doggie"
 #define OBJETOS_AIRE_LIBRE "assets/sprites/Escenarios.png"
 #define ESCENARIO_AIRE_LIBRE "assets/sprites/Escenarios1.png"
 #define OBJETOS_CAMPO "assets/sprites/OBJETOS_CAMPO.png"
 #define TILES "assets/sprites/tiles2.png"
 #define TILES2 "assets/sprites/tiles3.png"
 #define SPRITE_SHEET_DOG "assets/sprites/dogSpriteFinal.png"
+#define ICON "assets/sprites/IconoJuego.png"
 #define BG_MUSIC1 "assets/audio/musicaFondoAfuera.ogg"  
 #define BG_MENU "assets/audio/menu.ogg" 
 #define BG_LOSE "assets/audio/lose.ogg" 
@@ -37,6 +38,12 @@ int main()
     sf::RenderWindow* mainMenuWindow = new sf::RenderWindow(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), GAME_NAME);
     sf::RenderWindow* window = new sf::RenderWindow(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), GAME_NAME);
     sf::RenderWindow* finalWindow = new sf::RenderWindow(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), GAME_NAME);
+
+    sf::Image* iconTexture {new sf::Image()};
+    iconTexture->loadFromFile(ICON);
+    window->setIcon(64,64, iconTexture->getPixelsPtr());
+    mainMenuWindow->setIcon(64,64, iconTexture->getPixelsPtr());
+    finalWindow->setIcon(64,64, iconTexture->getPixelsPtr());
 
     finalWindow->setVisible(false);
     window->setVisible(false);
@@ -303,7 +310,7 @@ int main()
         trampaPerro14->SetTagName("enemy");
 
         GameObject* trampaPerro15{new GameObject(spriteSheetDog, 64*1, 64*11,64,64,
-        1, 1, new b2Vec2(3654,667),b2BodyType::b2_staticBody ,world, window)};
+        1, 1, new b2Vec2(3654,680),b2BodyType::b2_staticBody ,world, window)};
         trampaPerro15->SetTagName("enemy");
 
         GameObject* trampaPerro16{new GameObject(spriteSheetDog, 64*1, 64*11,64,64,
@@ -311,7 +318,7 @@ int main()
         trampaPerro16->SetTagName("enemy");
 
         GameObject* trampaPerro17{new GameObject(spriteSheetDog, 64*1, 64*11,64,64,
-        1, 1, new b2Vec2(4200,671),b2BodyType::b2_staticBody ,world, window)};
+        1, 1, new b2Vec2(4200,680),b2BodyType::b2_staticBody ,world, window)};
         trampaPerro17->SetTagName("enemy");
 
         GameObject* trampaPerro18{new GameObject(spriteSheetDog, 64*1, 64*11,64,64,
@@ -579,8 +586,8 @@ int main()
                         
 
                         
-                        //std::cout << character->GetCharacterPosition().x << std::endl;
-                        //std::cout << character->GetCharacterPosition().y << std::endl;
+                        std::cout << character->GetCharacterPosition().x << std::endl;
+                        std::cout << character->GetCharacterPosition().y << std::endl;
 
 
                         window->clear(*(new sf::Color(0, 100, 0, 255)));//limpiar la pantalla     

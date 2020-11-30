@@ -41,7 +41,7 @@ void Button::OnClick()
     sf::Vector2f mouseTranslate =  window->mapPixelToCoords(mousePos); //Este captura cuanto se ha movido el mouse dentro de la vena
     if(rectangleShape->getGlobalBounds().contains(mouseTranslate) && sf::Mouse::isButtonPressed(sf::Mouse::Left)) //Si esa traslación fue sobre la forma de nuestro rectangulo
     {
-        std::cout << "Mouse hover" << std::endl;
+        
         windowLocation = 3;
     }
 }
@@ -52,7 +52,7 @@ void Button::OnClickStart()
     sf::Vector2f mouseTranslate =  window->mapPixelToCoords(mousePos); //Este captura cuanto se ha movido el mouse dentro de la vena
     if(rectangleShape->getGlobalBounds().contains(mouseTranslate) && sf::Mouse::isButtonPressed(sf::Mouse::Left)) //Si esa traslación fue sobre la forma de nuestro rectangulo
     {
-        std::cout << "Mouse hover" << std::endl;
+        
         windowLocation = 2;
     }
 }
